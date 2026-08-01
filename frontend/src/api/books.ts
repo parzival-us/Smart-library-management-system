@@ -3,7 +3,7 @@ import { Book, BookListItem, Category, Author, BookCopy } from '@/types';
 
 export const booksApi = {
   getBooks: async (params?: { search?: string; category_id?: string; skip?: number; limit?: number }) => {
-    const response = await client.get<BookListItem[]>('/books', { params });
+    const response = await client.get<BookListItem[]>('/books/', { params });
     return response.data;
   },
   
@@ -13,7 +13,7 @@ export const booksApi = {
   },
   
   createBook: async (data: Partial<Book>) => {
-    const response = await client.post<Book>('/books', data);
+    const response = await client.post<Book>('/books/', data);
     return response.data;
   },
   
@@ -28,27 +28,27 @@ export const booksApi = {
   },
 
   getCategories: async () => {
-    const response = await client.get<Category[]>('/categories');
+    const response = await client.get<Category[]>('/books/categories/');
     return response.data;
   },
   
   createCategory: async (data: Partial<Category>) => {
-    const response = await client.post<Category>('/categories', data);
+    const response = await client.post<Category>('/books/categories/', data);
     return response.data;
   },
   
   getAuthors: async () => {
-    const response = await client.get<Author[]>('/authors');
+    const response = await client.get<Author[]>('/books/authors/');
     return response.data;
   },
   
   createAuthor: async (data: Partial<Author>) => {
-    const response = await client.post<Author>('/authors', data);
+    const response = await client.post<Author>('/books/authors/', data);
     return response.data;
   },
   
   createCopy: async (data: Partial<BookCopy>) => {
-    const response = await client.post<BookCopy>('/books/copies', data);
+    const response = await client.post<BookCopy>('/books/copies/', data);
     return response.data;
   }
 };

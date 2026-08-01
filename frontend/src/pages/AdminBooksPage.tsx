@@ -64,7 +64,7 @@ const AdminBooksPage = () => {
       setCategories(cats);
       setAuthors(auths);
     } catch {
-      // silent — dropdowns just won't populate
+      // silent
     }
   };
 
@@ -171,11 +171,35 @@ const AdminBooksPage = () => {
     }
   };
 
-  // ── Book Form Fields (shared by Add / Edit) ─────
-  const BookFormFields = () => (
+  // ── Table Columns ────────────────────────────────
+  const columns: Column<BookListItem>[] = [
+    { header: 'Title', accessor: 'title', render: (b) => <span className="font-medium">{b.title}</span> },
+    { header: 'ISBN', accessor: 'isbn' },
+    { header: 'Category', accessor: 'category', render: (b) => b.category?.name || '—' },
+    {
+      header: 'Authors',
+      accessor: 'authors' as any,
+      render: (b) => b.authors?.map((a) => a.name).join(', ') || '—',
+    },
+    { header: 'Copies', accessor: 'available_copies' },
+    {
+      header: 'Actions',
+      accessor: 'id',
+      render: (book) => (
+        <div className="flex items-center space-x-2">
+          <button onClick={() => openEditModal(book)} title="Edit book" className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-400 hover:bg-indigo-400/10 transition-all"><FiEdit2 size={15} /></button>
+          <button onClick={() => openCopyModal(book.id)} title="Add copy" className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-400 hover:bg-emerald-400/10 transition-all"><FiCopy size={15} /></button>
+          <button onClick={() => handleDelete(book.id)} title="Delete book" className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-400/10 transition-all"><FiTrash2 size={15} /></button>
+        </div>
+      ),
+    },
+  ];
+
+  // ── Inline form fields (NOT a sub-component to prevent focus loss) ──
+  const renderBookFormFields = (isEdit: boolean) => (
     <>
       <Input label="Title" value={form.title} onChange={(e) => updateField('title', e.target.value)} required />
-      {!editingBookId && (
+      {!isEdit && (
         <Input label="ISBN" value={form.isbn} onChange={(e) => updateField('isbn', e.target.value)} required />
       )}
       <Input label="Description" value={form.description} onChange={(e) => updateField('description', e.target.value)} />
@@ -217,48 +241,6 @@ const AdminBooksPage = () => {
     </>
   );
 
-  // ── Table Columns ────────────────────────────────
-  const columns: Column<BookListItem>[] = [
-    { header: 'Title', accessor: 'title', render: (b) => <span className="font-medium">{b.title}</span> },
-    { header: 'ISBN', accessor: 'isbn' },
-    { header: 'Category', accessor: 'category', render: (b) => b.category?.name || '—' },
-    {
-      header: 'Authors',
-      accessor: 'authors' as any,
-      render: (b) => b.authors?.map((a) => a.name).join(', ') || '—',
-    },
-    { header: 'Copies', accessor: 'available_copies' },
-    {
-      header: 'Actions',
-      accessor: 'id',
-      render: (book) => (
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={() => openEditModal(book)}
-            title="Edit book"
-            className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-400 hover:bg-indigo-400/10 transition-all"
-          >
-            <FiEdit2 size={15} />
-          </button>
-          <button
-            onClick={() => openCopyModal(book.id)}
-            title="Add copy"
-            className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-400 hover:bg-emerald-400/10 transition-all"
-          >
-            <FiCopy size={15} />
-          </button>
-          <button
-            onClick={() => handleDelete(book.id)}
-            title="Delete book"
-            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-400/10 transition-all"
-          >
-            <FiTrash2 size={15} />
-          </button>
-        </div>
-      ),
-    },
-  ];
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -280,7 +262,7 @@ const AdminBooksPage = () => {
       {/* ── Add Book Modal ── */}
       <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title="Add New Book" size="lg">
         <form onSubmit={handleAddSubmit} className="space-y-4">
-          <BookFormFields />
+          {renderBookFormFields(false)}
           <div className="flex justify-end space-x-3 mt-6">
             <Button variant="ghost" onClick={() => setIsAddModalOpen(false)} type="button">Cancel</Button>
             <Button type="submit">Create Book</Button>
@@ -291,7 +273,7 @@ const AdminBooksPage = () => {
       {/* ── Edit Book Modal ── */}
       <Modal isOpen={isEditModalOpen} onClose={() => { setIsEditModalOpen(false); setEditingBookId(null); }} title="Edit Book" size="lg">
         <form onSubmit={handleEditSubmit} className="space-y-4">
-          <BookFormFields />
+          {renderBookFormFields(true)}
           <div className="flex justify-end space-x-3 mt-6">
             <Button variant="ghost" onClick={() => { setIsEditModalOpen(false); setEditingBookId(null); }} type="button">Cancel</Button>
             <Button type="submit">Save Changes</Button>
