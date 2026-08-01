@@ -75,7 +75,7 @@ const DashboardPage = () => {
         
         <Card>
           <h3 className="text-lg font-semibold text-white mb-4">Fines Summary</h3>
-          <div className="flex items-center justify-between p-4 bg-slate-900/50 rounded-xl border border-white/5">
+          <div className="flex items-center justify-between p-4 bg-black rounded-xl border border-white/5">
             <div className="flex items-center text-emerald-400">
               <div className="p-3 bg-emerald-500/20 rounded-full mr-4">
                 <FiDollarSign size={24} />
@@ -116,7 +116,7 @@ const DashboardPage = () => {
               ) : (
                 <div className="space-y-3">
                   {activeLoans.slice(0, 3).map(loan => (
-                    <div key={loan.id} className="flex justify-between items-center p-3 rounded-lg bg-slate-900/50 border border-white/5">
+                    <div key={loan.id} className="flex justify-between items-center p-3 rounded-lg bg-black border border-white/5">
                       <div>
                         <p className="font-medium text-slate-200">Copy Barcode: {loan.copy_id.substring(0,8)}</p>
                         <p className="text-xs text-slate-400">Due: {new Date(loan.due_date).toLocaleDateString()}</p>

@@ -60,7 +60,7 @@ const Navbar = () => {
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   className="flex items-center space-x-3 focus:outline-none p-1 rounded-full hover:bg-white/5 transition-colors pr-3 border border-transparent hover:border-white/10"
                 >
-                  <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center border border-white/10 text-indigo-400">
+                  <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center border border-white/10 text-indigo-400">
                     <FiUser />
                   </div>
                   <span className="text-sm font-medium text-slate-200">
@@ -71,7 +71,7 @@ const Navbar = () => {
                 {dropdownOpen && (
                   <>
                     <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)}></div>
-                    <div className="absolute right-0 mt-2 w-48 glass-card bg-slate-900/95 py-2 z-50 animate-fade-in origin-top-right">
+                    <div className="absolute right-0 mt-2 w-48 glass-card bg-black py-2 z-50 animate-fade-in origin-top-right">
                       <div className="px-4 py-2 border-b border-white/10 mb-2">
                         <p className="text-sm font-medium text-white truncate">{user?.full_name}</p>
                         <p className="text-xs text-slate-400 truncate">{user?.email}</p>

@@ -34,7 +34,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, placeholder = 'S
         value={localValue}
         onChange={(e) => setLocalValue(e.target.value)}
         placeholder={placeholder}
-        className="w-full bg-slate-900/50 border border-white/10 hover:border-white/20 rounded-xl py-3 pl-11 pr-10 text-slate-100 placeholder-slate-500 outline-none backdrop-blur-sm input-glow transition-all shadow-lg shadow-black/5"
+        className="w-full bg-black border border-white/10 hover:border-white/20 rounded-xl py-3 pl-11 pr-10 text-slate-100 placeholder-slate-500 outline-none backdrop-blur-sm input-glow transition-all shadow-lg shadow-black/5"
       />
       {localValue && (
         <button

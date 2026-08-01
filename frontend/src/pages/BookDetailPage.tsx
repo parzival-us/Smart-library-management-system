@@ -166,7 +166,7 @@ const BookDetailPage = () => {
             ))}
             
             {unavailableCopies.map(copy => (
-              <Card key={copy.id} className="flex justify-between items-center bg-slate-900/30" padding="sm">
+              <Card key={copy.id} className="flex justify-between items-center bg-black" padding="sm">
                 <div>
                   <p className="font-medium text-slate-400">Barcode: {copy.barcode}</p>
                   <p className="text-sm text-slate-500">Condition: {copy.condition}</p>

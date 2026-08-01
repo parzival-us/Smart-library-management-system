@@ -34,11 +34,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-slate-950 relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-indigo-500/20 rounded-full blur-[120px] mix-blend-screen pointer-events-none"></div>
-      <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-violet-500/20 rounded-full blur-[120px] mix-blend-screen pointer-events-none"></div>
-      
+    <div className="min-h-screen flex items-center justify-center p-4 bg-black relative overflow-hidden">
       <div className="w-full max-w-md z-10 animate-slide-up">
         <div className="text-center mb-8">
           <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-indigo-500/30 mb-4 animate-pulse-glow">

@@ -285,7 +285,7 @@ const AdminBooksPage = () => {
             onChange={(e) => setNewAuthorName(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddAuthor(); } }}
             placeholder="Type author name..."
-            className="flex-1 bg-slate-900 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all placeholder:text-slate-500"
+            className="flex-1 bg-black border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all placeholder:text-slate-500"
           />
           <Button type="button" variant="secondary" onClick={handleAddAuthor} loading={addingAuthor} className="shrink-0">
             Add

@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-slate-950 text-slate-50 font-sans antialiased min-h-screen overflow-x-hidden selection:bg-indigo-500/30;
+    @apply bg-black text-slate-50 font-sans antialiased min-h-screen overflow-x-hidden selection:bg-indigo-500/30;
   }
 
   /* Custom Scrollbar */
@@ -22,7 +22,7 @@
 
 @layer components {
   .glass {
-    @apply backdrop-blur-xl bg-white/5 border border-white/10;
+    @apply backdrop-blur-xl bg-black border border-white/10;
   }
   
   .glass-card {

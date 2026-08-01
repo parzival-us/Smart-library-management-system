@@ -18,7 +18,7 @@ function DataTable<T>({ columns, data, emptyMessage = 'No data available', class
     <div className={`overflow-x-auto glass rounded-xl border border-white/10 ${className}`}>
       <table className="w-full text-left border-collapse">
         <thead>
-          <tr className="bg-slate-900/50 border-b border-white/10">
+          <tr className="bg-black border-b border-white/10">
             {columns.map((col, idx) => (
               <th key={idx} className="px-6 py-4 text-sm font-semibold text-slate-300">
                 {col.header}
