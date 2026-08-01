@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-950 text-slate-50 font-sans antialiased min-h-screen overflow-x-hidden selection:bg-indigo-500/30;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-700/50 rounded-full hover:bg-slate-600/50 transition-colors;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply backdrop-blur-xl bg-white/5 border border-white/10;
+  }
+  
+  .glass-card {
+    @apply glass rounded-2xl shadow-xl shadow-black/20;
+  }
+  
+  .gradient-primary {
+    @apply bg-gradient-to-r from-indigo-500 to-violet-500;
+  }
+  
+  .gradient-text {
+    @apply bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent;
+  }
+  
+  .gradient-border {
+    position: relative;
+    background: clip-padding-box;
+    border: solid 1px transparent;
+    border-radius: inherit;
+  }
+  
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    z-index: -1;
+    margin: -1px;
+    border-radius: inherit;
+    background: linear-gradient(to right, theme('colors.indigo.500'), theme('colors.violet.500'));
+  }
+
+  .hover-lift {
+    @apply transition-transform duration-300 ease-out hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-500/10;
+  }
+
+  .input-glow:focus-within {
+    @apply ring-2 ring-indigo-500/50 border-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.2)];
+  }
+}
+
+/* Staggered Animations */
+.stagger-1 { animation-delay: 100ms; }
+.stagger-2 { animation-delay: 200ms; }
+.stagger-3 { animation-delay: 300ms; }
+.stagger-4 { animation-delay: 400ms; }
+.stagger-5 { animation-delay: 500ms; }
