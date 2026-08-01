@@ -46,6 +46,41 @@ const AdminBooksPage = () => {
   const [copyCondition, setCopyCondition] = useState('Good');
 
   const [form, setForm] = useState<BookForm>({ ...emptyForm });
+  const [newAuthorName, setNewAuthorName] = useState('');
+  const [addingAuthor, setAddingAuthor] = useState(false);
+
+  const handleAddAuthor = async () => {
+    const name = newAuthorName.trim();
+    if (!name) return;
+
+    // Check if author already exists
+    const existing = authors.find((a) => a.name.toLowerCase() === name.toLowerCase());
+    if (existing) {
+      if (!form.author_ids.includes(existing.id)) {
+        updateField('author_ids', [...form.author_ids, existing.id]);
+      }
+      setNewAuthorName('');
+      return;
+    }
+
+    // Create new author
+    setAddingAuthor(true);
+    try {
+      const created = await booksApi.createAuthor({ name });
+      setAuthors((prev) => [...prev, created]);
+      updateField('author_ids', [...form.author_ids, created.id]);
+      setNewAuthorName('');
+      toast.success(`Author "${name}" added`);
+    } catch {
+      toast.error('Failed to add author');
+    } finally {
+      setAddingAuthor(false);
+    }
+  };
+
+  const removeAuthor = (authorId: string) => {
+    updateField('author_ids', form.author_ids.filter((id) => id !== authorId));
+  };
 
   const fetchBooks = async () => {
     try {
@@ -212,32 +247,52 @@ const AdminBooksPage = () => {
           <select
             value={form.category_id}
             onChange={(e) => updateField('category_id', e.target.value)}
-            className="w-full bg-slate-900 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
+            className="w-full bg-black border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
           >
-            <option value="" className="bg-slate-900 text-white">— None —</option>
+          <option value="" className="bg-black text-white">— None —</option>
             {categories.map((c) => (
-              <option key={c.id} value={c.id} className="bg-slate-900 text-white">{c.name}</option>
+              <option key={c.id} value={c.id} className="bg-black text-white">{c.name}</option>
             ))}
           </select>
         </div>
       )}
 
-      {authors.length > 0 && (
-        <div>
-          <label className="block text-sm font-medium text-slate-300 mb-1.5">Authors</label>
-          <select
-            multiple
-            value={form.author_ids}
-            onChange={(e) => updateField('author_ids', Array.from(e.target.selectedOptions, (o) => o.value))}
-            className="w-full bg-slate-900 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all min-h-[100px]"
-          >
-            {authors.map((a) => (
-              <option key={a.id} value={a.id} className="bg-slate-900 text-white">{a.name}</option>
-            ))}
-          </select>
-          <p className="text-xs text-slate-500 mt-1">Hold Ctrl/Cmd to select multiple authors.</p>
+      <div>
+        <label className="block text-sm font-medium text-slate-300 mb-1.5">Authors</label>
+
+        {/* Selected authors as removable tags */}
+        {form.author_ids.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-2">
+            {form.author_ids.map((id) => {
+              const author = authors.find((a) => a.id === id);
+              return author ? (
+                <span key={id} className="inline-flex items-center gap-1 bg-indigo-500/20 text-indigo-300 text-xs font-medium px-2.5 py-1 rounded-full border border-indigo-500/30">
+                  {author.name}
+                  <button type="button" onClick={() => removeAuthor(id)} className="hover:text-white transition-colors">
+                    &times;
+                  </button>
+                </span>
+              ) : null;
+            })}
+          </div>
+        )}
+
+        {/* Type author name + Add button */}
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={newAuthorName}
+            onChange={(e) => setNewAuthorName(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddAuthor(); } }}
+            placeholder="Type author name..."
+            className="flex-1 bg-slate-900 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all placeholder:text-slate-500"
+          />
+          <Button type="button" variant="secondary" onClick={handleAddAuthor} loading={addingAuthor} className="shrink-0">
+            Add
+          </Button>
         </div>
-      )}
+        <p className="text-xs text-slate-500 mt-1">Type a name and press Enter or click Add. New authors are created automatically.</p>
+      </div>
     </>
   );
 
@@ -290,12 +345,12 @@ const AdminBooksPage = () => {
             <select
               value={copyCondition}
               onChange={(e) => setCopyCondition(e.target.value)}
-              className="w-full bg-slate-900 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
+              className="w-full bg-black border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
             >
-              <option value="New" className="bg-slate-900 text-white">New</option>
-              <option value="Good" className="bg-slate-900 text-white">Good</option>
-              <option value="Fair" className="bg-slate-900 text-white">Fair</option>
-              <option value="Poor" className="bg-slate-900 text-white">Poor</option>
+              <option value="New" className="bg-black text-white">New</option>
+              <option value="Good" className="bg-black text-white">Good</option>
+              <option value="Fair" className="bg-black text-white">Fair</option>
+              <option value="Poor" className="bg-black text-white">Poor</option>
             </select>
           </div>
           <div className="flex justify-end space-x-3 mt-6">
