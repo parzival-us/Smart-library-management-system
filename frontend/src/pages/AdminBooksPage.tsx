@@ -212,11 +212,11 @@ const AdminBooksPage = () => {
           <select
             value={form.category_id}
             onChange={(e) => updateField('category_id', e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
+            className="w-full bg-slate-900 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
           >
-            <option value="">— None —</option>
+            <option value="" className="bg-slate-900 text-white">— None —</option>
             {categories.map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
+              <option key={c.id} value={c.id} className="bg-slate-900 text-white">{c.name}</option>
             ))}
           </select>
         </div>
@@ -229,10 +229,10 @@ const AdminBooksPage = () => {
             multiple
             value={form.author_ids}
             onChange={(e) => updateField('author_ids', Array.from(e.target.selectedOptions, (o) => o.value))}
-            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all min-h-[100px]"
+            className="w-full bg-slate-900 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all min-h-[100px]"
           >
             {authors.map((a) => (
-              <option key={a.id} value={a.id}>{a.name}</option>
+              <option key={a.id} value={a.id} className="bg-slate-900 text-white">{a.name}</option>
             ))}
           </select>
           <p className="text-xs text-slate-500 mt-1">Hold Ctrl/Cmd to select multiple authors.</p>
@@ -290,12 +290,12 @@ const AdminBooksPage = () => {
             <select
               value={copyCondition}
               onChange={(e) => setCopyCondition(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
+              className="w-full bg-slate-900 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
             >
-              <option value="New">New</option>
-              <option value="Good">Good</option>
-              <option value="Fair">Fair</option>
-              <option value="Poor">Poor</option>
+              <option value="New" className="bg-slate-900 text-white">New</option>
+              <option value="Good" className="bg-slate-900 text-white">Good</option>
+              <option value="Fair" className="bg-slate-900 text-white">Fair</option>
+              <option value="Poor" className="bg-slate-900 text-white">Poor</option>
             </select>
           </div>
           <div className="flex justify-end space-x-3 mt-6">

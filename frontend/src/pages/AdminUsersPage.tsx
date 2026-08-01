@@ -58,9 +58,9 @@ const AdminUsersPage = () => {
           onChange={(e) => handleChangeRole(user, e.target.value as any)}
           className="bg-slate-900 border border-white/10 rounded px-2 py-1 text-sm text-slate-200 outline-none focus:ring-1 focus:ring-indigo-500"
         >
-          <option value="STUDENT">Student</option>
-          <option value="LIBRARIAN">Librarian</option>
-          <option value="ADMIN">Admin</option>
+          <option value="STUDENT" className="bg-slate-900 text-white">Student</option>
+          <option value="LIBRARIAN" className="bg-slate-900 text-white">Librarian</option>
+          <option value="ADMIN" className="bg-slate-900 text-white">Admin</option>
         </select>
       )
     },
