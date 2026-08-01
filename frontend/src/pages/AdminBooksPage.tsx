@@ -1,75 +1,262 @@
 import React, { useState, useEffect } from 'react';
 import { booksApi } from '@/api/books';
-import { BookListItem } from '@/types';
+import { BookListItem, Category, Author } from '@/types';
 import Card from '@/components/ui/Card';
 import DataTable, { Column } from '@/components/ui/DataTable';
 import Spinner from '@/components/ui/Spinner';
 import Button from '@/components/ui/Button';
 import toast from 'react-hot-toast';
-import { FiPlus, FiEdit2, FiTrash2 } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiCopy } from 'react-icons/fi';
 import Modal from '@/components/ui/Modal';
 import Input from '@/components/ui/Input';
 
+interface BookForm {
+  title: string;
+  isbn: string;
+  description: string;
+  published_year: string;
+  cover_image_url: string;
+  category_id: string;
+  author_ids: string[];
+}
+
+const emptyForm: BookForm = {
+  title: '',
+  isbn: '',
+  description: '',
+  published_year: '',
+  cover_image_url: '',
+  category_id: '',
+  author_ids: [],
+};
+
 const AdminBooksPage = () => {
   const [books, setBooks] = useState<BookListItem[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [authors, setAuthors] = useState<Author[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newBook, setNewBook] = useState({ title: '', isbn: '' });
+
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isCopyModalOpen, setIsCopyModalOpen] = useState(false);
+
+  const [editingBookId, setEditingBookId] = useState<string | null>(null);
+  const [copyBookId, setCopyBookId] = useState<string | null>(null);
+  const [copyBarcode, setCopyBarcode] = useState('');
+  const [copyCondition, setCopyCondition] = useState('Good');
+
+  const [form, setForm] = useState<BookForm>({ ...emptyForm });
 
   const fetchBooks = async () => {
     try {
       const data = await booksApi.getBooks();
       setBooks(data);
-    } catch (error) {
+    } catch {
       toast.error('Failed to load books');
     } finally {
       setLoading(false);
     }
   };
 
+  const fetchMeta = async () => {
+    try {
+      const [cats, auths] = await Promise.all([booksApi.getCategories(), booksApi.getAuthors()]);
+      setCategories(cats);
+      setAuthors(auths);
+    } catch {
+      // silent — dropdowns just won't populate
+    }
+  };
+
   useEffect(() => {
     fetchBooks();
+    fetchMeta();
   }, []);
 
+  const updateField = (field: keyof BookForm, value: string | string[]) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  // ── Add Book ─────────────────────────────────────
+  const openAddModal = () => {
+    setForm({ ...emptyForm });
+    setIsAddModalOpen(true);
+  };
+
+  const handleAddSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const payload: Record<string, unknown> = { title: form.title, isbn: form.isbn };
+      if (form.description) payload.description = form.description;
+      if (form.published_year) payload.published_year = parseInt(form.published_year, 10);
+      if (form.cover_image_url) payload.cover_image_url = form.cover_image_url;
+      if (form.category_id) payload.category_id = form.category_id;
+      if (form.author_ids.length > 0) payload.author_ids = form.author_ids;
+
+      await booksApi.createBook(payload);
+      toast.success('Book created successfully');
+      setIsAddModalOpen(false);
+      fetchBooks();
+    } catch {
+      toast.error('Failed to create book');
+    }
+  };
+
+  // ── Edit Book ────────────────────────────────────
+  const openEditModal = (book: BookListItem) => {
+    setEditingBookId(book.id);
+    setForm({
+      title: book.title,
+      isbn: book.isbn,
+      description: book.description || '',
+      published_year: book.published_year?.toString() || '',
+      cover_image_url: book.cover_image_url || '',
+      category_id: book.category?.id || '',
+      author_ids: book.authors?.map((a) => a.id) || [],
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingBookId) return;
+    try {
+      const payload: Record<string, unknown> = { title: form.title };
+      if (form.description) payload.description = form.description;
+      if (form.published_year) payload.published_year = parseInt(form.published_year, 10);
+      if (form.cover_image_url) payload.cover_image_url = form.cover_image_url;
+      if (form.category_id) payload.category_id = form.category_id;
+      if (form.author_ids.length > 0) payload.author_ids = form.author_ids;
+
+      await booksApi.updateBook(editingBookId, payload);
+      toast.success('Book updated successfully');
+      setIsEditModalOpen(false);
+      setEditingBookId(null);
+      fetchBooks();
+    } catch {
+      toast.error('Failed to update book');
+    }
+  };
+
+  // ── Add Copy ─────────────────────────────────────
+  const openCopyModal = (bookId: string) => {
+    setCopyBookId(bookId);
+    setCopyBarcode('');
+    setCopyCondition('Good');
+    setIsCopyModalOpen(true);
+  };
+
+  const handleCopySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!copyBookId) return;
+    try {
+      await booksApi.createCopy({ book_id: copyBookId, barcode: copyBarcode, condition: copyCondition } as any);
+      toast.success('Copy added successfully');
+      setIsCopyModalOpen(false);
+      fetchBooks();
+    } catch {
+      toast.error('Failed to add copy');
+    }
+  };
+
+  // ── Delete Book ──────────────────────────────────
   const handleDelete = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this book?')) return;
     try {
       await booksApi.deleteBook(id);
       toast.success('Book deleted');
       fetchBooks();
-    } catch (error) {
+    } catch {
       toast.error('Failed to delete book');
     }
   };
 
-  const handleAddSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await booksApi.createBook(newBook);
-      toast.success('Book created successfully');
-      setIsModalOpen(false);
-      setNewBook({ title: '', isbn: '' });
-      fetchBooks();
-    } catch (error) {
-      toast.error('Failed to create book');
-    }
-  };
+  // ── Book Form Fields (shared by Add / Edit) ─────
+  const BookFormFields = () => (
+    <>
+      <Input label="Title" value={form.title} onChange={(e) => updateField('title', e.target.value)} required />
+      {!editingBookId && (
+        <Input label="ISBN" value={form.isbn} onChange={(e) => updateField('isbn', e.target.value)} required />
+      )}
+      <Input label="Description" value={form.description} onChange={(e) => updateField('description', e.target.value)} />
+      <Input label="Published Year" type="number" value={form.published_year} onChange={(e) => updateField('published_year', e.target.value)} />
+      <Input label="Cover Image URL" value={form.cover_image_url} onChange={(e) => updateField('cover_image_url', e.target.value)} />
 
+      {categories.length > 0 && (
+        <div>
+          <label className="block text-sm font-medium text-slate-300 mb-1.5">Category</label>
+          <select
+            value={form.category_id}
+            onChange={(e) => updateField('category_id', e.target.value)}
+            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
+          >
+            <option value="">— None —</option>
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {authors.length > 0 && (
+        <div>
+          <label className="block text-sm font-medium text-slate-300 mb-1.5">Authors</label>
+          <select
+            multiple
+            value={form.author_ids}
+            onChange={(e) => updateField('author_ids', Array.from(e.target.selectedOptions, (o) => o.value))}
+            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all min-h-[100px]"
+          >
+            {authors.map((a) => (
+              <option key={a.id} value={a.id}>{a.name}</option>
+            ))}
+          </select>
+          <p className="text-xs text-slate-500 mt-1">Hold Ctrl/Cmd to select multiple authors.</p>
+        </div>
+      )}
+    </>
+  );
+
+  // ── Table Columns ────────────────────────────────
   const columns: Column<BookListItem>[] = [
     { header: 'Title', accessor: 'title', render: (b) => <span className="font-medium">{b.title}</span> },
     { header: 'ISBN', accessor: 'isbn' },
-    { header: 'Category', accessor: 'category', render: (b) => b.category?.name || '-' },
-    { header: 'Available', accessor: 'available_copies' },
+    { header: 'Category', accessor: 'category', render: (b) => b.category?.name || '—' },
+    {
+      header: 'Authors',
+      accessor: 'authors' as any,
+      render: (b) => b.authors?.map((a) => a.name).join(', ') || '—',
+    },
+    { header: 'Copies', accessor: 'available_copies' },
     {
       header: 'Actions',
       accessor: 'id',
       render: (book) => (
-        <div className="flex items-center space-x-3">
-          <button className="text-slate-400 hover:text-indigo-400 transition-colors"><FiEdit2 size={16} /></button>
-          <button onClick={() => handleDelete(book.id)} className="text-slate-400 hover:text-rose-400 transition-colors"><FiTrash2 size={16} /></button>
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => openEditModal(book)}
+            title="Edit book"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-400 hover:bg-indigo-400/10 transition-all"
+          >
+            <FiEdit2 size={15} />
+          </button>
+          <button
+            onClick={() => openCopyModal(book.id)}
+            title="Add copy"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-400 hover:bg-emerald-400/10 transition-all"
+          >
+            <FiCopy size={15} />
+          </button>
+          <button
+            onClick={() => handleDelete(book.id)}
+            title="Delete book"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-400/10 transition-all"
+          >
+            <FiTrash2 size={15} />
+          </button>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   return (
@@ -79,7 +266,7 @@ const AdminBooksPage = () => {
           <h1 className="text-3xl font-bold text-white mb-2">Manage Books</h1>
           <p className="text-slate-400">Add, edit, or remove books from the catalog.</p>
         </div>
-        <Button icon={<FiPlus />} onClick={() => setIsModalOpen(true)}>Add Book</Button>
+        <Button icon={<FiPlus />} onClick={openAddModal}>Add Book</Button>
       </div>
 
       <Card padding="none">
@@ -90,23 +277,48 @@ const AdminBooksPage = () => {
         )}
       </Card>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Add New Book">
+      {/* ── Add Book Modal ── */}
+      <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title="Add New Book" size="lg">
         <form onSubmit={handleAddSubmit} className="space-y-4">
-          <Input 
-            label="Title" 
-            value={newBook.title} 
-            onChange={e => setNewBook({...newBook, title: e.target.value})} 
-            required 
-          />
-          <Input 
-            label="ISBN" 
-            value={newBook.isbn} 
-            onChange={e => setNewBook({...newBook, isbn: e.target.value})} 
-            required 
-          />
+          <BookFormFields />
           <div className="flex justify-end space-x-3 mt-6">
-            <Button variant="ghost" onClick={() => setIsModalOpen(false)} type="button">Cancel</Button>
+            <Button variant="ghost" onClick={() => setIsAddModalOpen(false)} type="button">Cancel</Button>
             <Button type="submit">Create Book</Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* ── Edit Book Modal ── */}
+      <Modal isOpen={isEditModalOpen} onClose={() => { setIsEditModalOpen(false); setEditingBookId(null); }} title="Edit Book" size="lg">
+        <form onSubmit={handleEditSubmit} className="space-y-4">
+          <BookFormFields />
+          <div className="flex justify-end space-x-3 mt-6">
+            <Button variant="ghost" onClick={() => { setIsEditModalOpen(false); setEditingBookId(null); }} type="button">Cancel</Button>
+            <Button type="submit">Save Changes</Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* ── Add Copy Modal ── */}
+      <Modal isOpen={isCopyModalOpen} onClose={() => setIsCopyModalOpen(false)} title="Add Book Copy">
+        <form onSubmit={handleCopySubmit} className="space-y-4">
+          <Input label="Barcode" value={copyBarcode} onChange={(e) => setCopyBarcode(e.target.value)} required />
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-1.5">Condition</label>
+            <select
+              value={copyCondition}
+              onChange={(e) => setCopyCondition(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
+            >
+              <option value="New">New</option>
+              <option value="Good">Good</option>
+              <option value="Fair">Fair</option>
+              <option value="Poor">Poor</option>
+            </select>
+          </div>
+          <div className="flex justify-end space-x-3 mt-6">
+            <Button variant="ghost" onClick={() => setIsCopyModalOpen(false)} type="button">Cancel</Button>
+            <Button type="submit">Add Copy</Button>
           </div>
         </form>
       </Modal>
