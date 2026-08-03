@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { adminApi } from '@/api/admin';
 import { circulationApi } from '@/api/circulation';
@@ -6,10 +6,18 @@ import { DashboardStats, Loan, Fine } from '@/types';
 import StatsCard from '@/components/ui/StatsCard';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
-import { FiBook, FiUsers, FiClock, FiAlertCircle, FiDollarSign } from 'react-icons/fi';
+import PageHeader from '@/components/ui/PageHeader';
+import { FiActivity, FiArrowUpRight, FiBook, FiCalendar, FiClock, FiDollarSign, FiUsers } from 'react-icons/fi';
 import Spinner from '@/components/ui/Spinner';
 import { Link } from 'react-router-dom';
 import Button from '@/components/ui/Button';
+
+const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 18) return 'Good afternoon';
+  return 'Good evening';
+};
 
 const DashboardPage = () => {
   const { user, isStaff } = useAuth();
@@ -53,31 +61,38 @@ const DashboardPage = () => {
 
   const renderAdminDashboard = () => (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard title="Total Books" value={stats?.total_books || 0} icon={<FiBook size={24} />} className="stagger-1" />
         <StatsCard title="Total Users" value={stats?.total_users || 0} icon={<FiUsers size={24} />} className="stagger-2" />
         <StatsCard title="Active Loans" value={stats?.active_loans || 0} icon={<FiClock size={24} />} className="stagger-3" />
-        <StatsCard title="Overdue Loans" value={stats?.overdue_loans || 0} icon={<FiAlertCircle size={24} />} className="stagger-4" />
+        <StatsCard title="Overdue Loans" value={stats?.overdue_loans || 0} icon={<FiActivity size={24} />} className="stagger-4" />
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8 stagger-5">
-        <Card title="Quick Actions">
-          <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
-          <div className="flex flex-wrap gap-4">
+      <div className="stagger-5 mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Card className="overflow-hidden">
+          <div className="mb-5 flex items-center justify-between">
+            <div>
+              <p className="section-kicker mb-2">Workspace</p>
+              <h3 className="text-lg font-semibold text-white">Quick actions</h3>
+            </div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-indigo-400/15 bg-indigo-500/10 text-indigo-300"><FiActivity /></div>
+          </div>
+          <div className="flex flex-wrap gap-3">
             <Link to="/admin/books">
-              <Button icon={<FiBook />}>Manage Books</Button>
+              <Button icon={<FiBook />}>Manage books</Button>
             </Link>
             <Link to="/admin/users">
-              <Button variant="secondary" icon={<FiUsers />}>Manage Users</Button>
+              <Button variant="secondary" icon={<FiUsers />}>Manage users</Button>
             </Link>
           </div>
         </Card>
         
-        <Card>
-          <h3 className="text-lg font-semibold text-white mb-4">Fines Summary</h3>
-          <div className="flex items-center justify-between p-4 bg-black rounded-xl border border-white/5">
+        <Card className="overflow-hidden">
+          <p className="section-kicker mb-2">Collections</p>
+          <h3 className="mb-4 text-lg font-semibold text-white">Fines summary</h3>
+          <div className="flex items-center justify-between rounded-xl border border-emerald-400/10 bg-emerald-500/[0.06] p-4">
             <div className="flex items-center text-emerald-400">
-              <div className="p-3 bg-emerald-500/20 rounded-full mr-4">
+              <div className="mr-4 rounded-xl bg-emerald-500/15 p-3">
                 <FiDollarSign size={24} />
               </div>
               <div>
@@ -98,17 +113,20 @@ const DashboardPage = () => {
 
     return (
       <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
           <StatsCard title="Active Loans" value={activeLoans.length} icon={<FiBook size={24} />} className="stagger-1" />
           <StatsCard title="Total Fines" value={`$${totalUnpaid.toFixed(2)}`} icon={<FiDollarSign size={24} />} className="stagger-2" />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8 stagger-3">
+        <div className="stagger-3 mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2 space-y-6">
             <Card>
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-white">Recent Loans</h3>
-                <Link to="/my-loans" className="text-sm text-indigo-400 hover:text-indigo-300">View All</Link>
+              <div className="mb-5 flex items-center justify-between">
+                <div>
+                  <p className="section-kicker mb-2">Reading now</p>
+                  <h3 className="text-lg font-semibold text-white">Recent loans</h3>
+                </div>
+                <Link to="/my-loans" className="flex items-center gap-1 text-sm font-medium text-indigo-300 transition-colors hover:text-indigo-200">View all <FiArrowUpRight size={15} /></Link>
               </div>
               
               {activeLoans.length === 0 ? (
@@ -116,7 +134,7 @@ const DashboardPage = () => {
               ) : (
                 <div className="space-y-3">
                   {activeLoans.slice(0, 3).map(loan => (
-                    <div key={loan.id} className="flex justify-between items-center p-3 rounded-lg bg-black border border-white/5">
+                    <div key={loan.id} className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-slate-950/45 p-3.5">
                       <div>
                         <p className="font-medium text-slate-200">Copy Barcode: {loan.copy_id.substring(0,8)}</p>
                         <p className="text-xs text-slate-400">Due: {new Date(loan.due_date).toLocaleDateString()}</p>
@@ -131,8 +149,9 @@ const DashboardPage = () => {
 
           <div>
             <Card>
-              <h3 className="text-lg font-semibold text-white mb-4">Quick Links</h3>
-              <div className="space-y-3 flex flex-col">
+              <p className="section-kicker mb-2">Keep exploring</p>
+              <h3 className="mb-4 text-lg font-semibold text-white">Quick links</h3>
+              <div className="flex flex-col space-y-3">
                 <Link to="/catalog">
                   <Button fullWidth icon={<FiBook />}>Browse Catalog</Button>
                 </Link>
@@ -148,13 +167,26 @@ const DashboardPage = () => {
   };
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">
-          Welcome, <span className="gradient-text">{user?.full_name?.split(' ')[0]}</span>
-        </h1>
-        <p className="text-slate-400">Here's what's happening with your account today.</p>
-      </div>
+    <div className="space-y-7">
+      <PageHeader
+        eyebrow={isStaff ? 'Library command center' : 'Your reading space'}
+        title={<>{getGreeting()}, <span className="gradient-text">{user?.full_name?.split(' ')[0]}</span>.</>}
+        description={isStaff ? 'Here is a live view of your collection, members, and lending activity.' : 'Everything you need for your next chapter is right here.'}
+        aside={
+          <div className="hidden items-center gap-3 rounded-xl border border-white/[0.08] bg-slate-950/45 px-4 py-3 sm:flex">
+            <FiCalendar className="text-indigo-300" />
+            <div>
+              <p className="text-xs font-medium uppercase tracking-[0.1em] text-slate-500">Today</p>
+              <p className="text-sm font-semibold text-slate-200">{new Intl.DateTimeFormat(undefined, { weekday: 'short', month: 'short', day: 'numeric' }).format(new Date())}</p>
+            </div>
+          </div>
+        }
+        actions={
+          <Link to={isStaff ? '/admin/books' : '/catalog'}>
+            <Button size="sm" icon={isStaff ? <FiBook /> : <FiArrowUpRight />}>{isStaff ? 'Manage collection' : 'Explore catalog'}</Button>
+          </Link>
+        }
+      />
 
       {isStaff ? renderAdminDashboard() : renderStudentDashboard()}
     </div>

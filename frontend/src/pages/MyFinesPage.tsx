@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { circulationApi } from '@/api/circulation';
 import { Fine } from '@/types';
 import Card from '@/components/ui/Card';
@@ -8,6 +8,7 @@ import Spinner from '@/components/ui/Spinner';
 import EmptyState from '@/components/ui/EmptyState';
 import { FiDollarSign, FiAlertCircle } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import PageHeader from '@/components/ui/PageHeader';
 
 const MyFinesPage = () => {
   const [fines, setFines] = useState<Fine[]>([]);
@@ -45,23 +46,23 @@ const MyFinesPage = () => {
   const totalUnpaid = fines.filter(f => !f.is_paid).reduce((sum, f) => sum + f.amount, 0);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-white mb-2">My Fines</h1>
-          <p className="text-slate-400">View and manage your library fines.</p>
-        </div>
-        
-        <div className="glass px-6 py-3 rounded-xl border-rose-500/30 flex items-center">
-          <div className="w-10 h-10 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center mr-4">
+    <div className="space-y-7">
+      <PageHeader
+        eyebrow="Account balance"
+        title={<>Stay on top of <span className="gradient-text">your account.</span></>}
+        description="View outstanding library fines and settle them whenever you are ready."
+        aside={
+          <div className="flex items-center rounded-xl border border-rose-400/20 bg-rose-500/[0.07] px-4 py-3">
+            <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500/15 text-rose-300">
             <FiAlertCircle size={20} />
           </div>
           <div>
-            <p className="text-sm text-slate-400 font-medium">Total Balance</p>
+              <p className="text-xs font-medium uppercase tracking-[0.1em] text-slate-500">Total balance</p>
             <p className="text-2xl font-bold text-white">${totalUnpaid.toFixed(2)}</p>
           </div>
-        </div>
-      </div>
+          </div>
+        }
+      />
 
       {loading ? (
         <div className="flex justify-center py-12"><Spinner /></div>

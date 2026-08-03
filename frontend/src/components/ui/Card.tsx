@@ -1,6 +1,6 @@
-import React, { ReactNode } from 'react';
+import React, { HTMLAttributes, ReactNode } from 'react';
 
-interface CardProps {
+interface CardProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
   className?: string;
   hoverable?: boolean;
@@ -13,7 +13,8 @@ const Card: React.FC<CardProps> = ({
   className = '', 
   hoverable = false,
   padding = 'md',
-  onClick
+  onClick,
+  ...props
 }) => {
   const paddingClasses = {
     none: '',
@@ -26,6 +27,7 @@ const Card: React.FC<CardProps> = ({
     <div 
       className={`glass-card ${paddingClasses[padding]} ${hoverable ? 'hover-lift cursor-pointer' : ''} ${className}`}
       onClick={onClick}
+      {...props}
     >
       {children}
     </div>

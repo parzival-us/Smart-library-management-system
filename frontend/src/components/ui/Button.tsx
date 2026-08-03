@@ -20,7 +20,7 @@ const Button: React.FC<ButtonProps> = ({
   disabled,
   ...props
 }) => {
-  const baseClasses = 'inline-flex items-center justify-center rounded-xl font-medium transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950';
+  const baseClasses = 'relative inline-flex items-center justify-center overflow-hidden rounded-xl font-medium transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950';
   
   const variantClasses = {
     primary: 'bg-gradient-to-r from-indigo-500 to-violet-500 text-white hover:from-indigo-400 hover:to-violet-400 focus:ring-indigo-500 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 border border-indigo-400/20',
@@ -45,9 +45,12 @@ const Button: React.FC<ButtonProps> = ({
       disabled={disabled || loading}
       {...props}
     >
-      {loading && <Spinner size="sm" className="mr-2" />}
-      {!loading && icon && <span className="mr-2">{icon}</span>}
-      {children}
+      <span className="button-shine" aria-hidden="true" />
+      <span className="relative z-10 inline-flex items-center justify-center">
+        {loading && <Spinner size="sm" className="mr-2" />}
+        {!loading && icon && <span className="mr-2">{icon}</span>}
+        {children}
+      </span>
     </button>
   );
 };

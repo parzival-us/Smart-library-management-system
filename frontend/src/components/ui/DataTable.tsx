@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 export interface Column<T> {
   header: string;
@@ -15,12 +15,12 @@ interface DataTableProps<T> {
 
 function DataTable<T>({ columns, data, emptyMessage = 'No data available', className = '' }: DataTableProps<T>) {
   return (
-    <div className={`overflow-x-auto glass rounded-xl border border-white/10 ${className}`}>
+    <div className={`relative overflow-x-auto rounded-2xl border border-white/[0.08] bg-slate-950/40 shadow-[0_18px_50px_-35px_rgba(2,6,23,0.9)] ${className}`}>
       <table className="w-full text-left border-collapse">
         <thead>
-          <tr className="bg-black border-b border-white/10">
+          <tr className="border-b border-white/[0.08] bg-slate-950/75">
             {columns.map((col, idx) => (
-              <th key={idx} className="px-6 py-4 text-sm font-semibold text-slate-300">
+              <th key={idx} className="whitespace-nowrap px-6 py-4 text-[0.7rem] font-semibold uppercase tracking-[0.1em] text-slate-400">
                 {col.header}
               </th>
             ))}
@@ -35,9 +35,9 @@ function DataTable<T>({ columns, data, emptyMessage = 'No data available', class
             </tr>
           ) : (
             data.map((item, rowIndex) => (
-              <tr key={rowIndex} className="hover:bg-white/5 transition-colors group">
+              <tr key={rowIndex} className="group transition-colors hover:bg-indigo-400/[0.045]">
                 {columns.map((col, colIndex) => (
-                  <td key={colIndex} className="px-6 py-4 text-sm text-slate-300">
+                  <td key={colIndex} className="whitespace-nowrap px-6 py-4 text-sm text-slate-300">
                     {col.render ? col.render(item) : String(item[col.accessor as keyof T] || '-')}
                   </td>
                 ))}

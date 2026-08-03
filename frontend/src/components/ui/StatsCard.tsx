@@ -12,11 +12,11 @@ interface StatsCardProps {
 
 const StatsCard: React.FC<StatsCardProps> = ({ title, value, icon, trend, className = '' }) => {
   return (
-    <Card hoverable padding="md" className={className}>
+    <Card hoverable padding="md" className={`overflow-hidden ${className}`}>
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm font-medium text-slate-400 mb-1">{title}</p>
-          <h3 className="text-3xl font-bold text-slate-50 tracking-tight">{value}</h3>
+          <p className="mb-1 text-sm font-medium text-slate-400">{title}</p>
+          <h3 className="text-3xl font-bold tracking-[-0.035em] text-slate-50">{value}</h3>
           
           {trend !== undefined && (
             <div className={`flex items-center mt-2 text-xs font-medium ${trend >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
@@ -26,7 +26,7 @@ const StatsCard: React.FC<StatsCardProps> = ({ title, value, icon, trend, classN
           )}
         </div>
         
-        <div className="p-3 rounded-xl bg-gradient-to-br from-indigo-500/20 to-violet-500/20 border border-indigo-500/20 text-indigo-400 shadow-inner">
+        <div className="rounded-xl border border-indigo-400/20 bg-gradient-to-br from-indigo-500/20 to-violet-500/20 p-3 text-indigo-300 shadow-inner">
           {icon}
         </div>
       </div>

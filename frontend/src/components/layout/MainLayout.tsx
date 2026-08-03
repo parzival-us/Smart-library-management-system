@@ -13,14 +13,17 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const showSidebar = isAuthenticated && isStaff;
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="app-shell">
+      <div className="ambient-orb ambient-orb--violet" aria-hidden="true" />
+      <div className="ambient-orb ambient-orb--blue" aria-hidden="true" />
+      <div className="ambient-orb ambient-orb--rose" aria-hidden="true" />
       <Navbar />
       
-      <div className="flex pt-16 h-full">
+      <div className="relative z-10 flex h-full pt-16">
         {showSidebar && <Sidebar />}
         
         <main className={`flex-1 min-h-[calc(100vh-4rem)] p-4 sm:p-6 lg:p-8 transition-all duration-300 ${showSidebar ? 'lg:ml-64' : ''}`}>
-          <div className="max-w-7xl mx-auto w-full animate-fade-in">
+          <div className="mx-auto w-full max-w-7xl animate-fade-in">
             {children}
           </div>
         </main>

@@ -5,6 +5,7 @@ import Card from '@/components/ui/Card';
 import DataTable, { Column } from '@/components/ui/DataTable';
 import Spinner from '@/components/ui/Spinner';
 import Button from '@/components/ui/Button';
+import PageHeader from '@/components/ui/PageHeader';
 import toast from 'react-hot-toast';
 import { FiPlus, FiEdit2, FiTrash2, FiCopy } from 'react-icons/fi';
 import Modal from '@/components/ui/Modal';
@@ -297,14 +298,19 @@ const AdminBooksPage = () => {
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Manage Books</h1>
-          <p className="text-slate-400">Add, edit, or remove books from the catalog.</p>
-        </div>
-        <Button icon={<FiPlus />} onClick={openAddModal}>Add Book</Button>
-      </div>
+    <div className="space-y-7">
+      <PageHeader
+        eyebrow="Catalog administration"
+        title={<>Keep the collection <span className="gradient-text">in motion.</span></>}
+        description="Add new titles, keep book details accurate, and manage every copy from one place."
+        aside={
+          <div className="hidden rounded-xl border border-white/[0.08] bg-slate-950/45 px-4 py-3 sm:block">
+            <p className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500">Catalog</p>
+            <p className="mt-1 text-lg font-semibold text-slate-100">{loading ? '—' : books.length} titles</p>
+          </div>
+        }
+        actions={<Button icon={<FiPlus />} onClick={openAddModal}>Add book</Button>}
+      />
 
       <Card padding="none">
         {loading ? (

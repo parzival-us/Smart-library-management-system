@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { circulationApi } from '@/api/circulation';
 import { Loan } from '@/types';
-import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import Spinner from '@/components/ui/Spinner';
 import EmptyState from '@/components/ui/EmptyState';
-import { FiClock, FiBookOpen } from 'react-icons/fi';
+import { FiBookOpen } from 'react-icons/fi';
 import DataTable, { Column } from '@/components/ui/DataTable';
+import PageHeader from '@/components/ui/PageHeader';
 
 const MyLoansPage = () => {
   const [loans, setLoans] = useState<Loan[]>([]);
@@ -62,27 +62,33 @@ const MyLoansPage = () => {
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-white mb-2">My Loans</h1>
-          <p className="text-slate-400">Track your borrowed books and due dates.</p>
-        </div>
-        
-        <div className="flex glass rounded-lg p-1">
+    <div className="space-y-7">
+      <PageHeader
+        eyebrow="Your borrowed titles"
+        title={<>Reading, <span className="gradient-text">right on schedule.</span></>}
+        description="Keep an eye on your loans, return dates, and reading history."
+        aside={
+          <div className="hidden rounded-xl border border-white/[0.08] bg-slate-950/45 px-4 py-3 sm:block">
+            <p className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500">Currently shown</p>
+            <p className="mt-1 text-lg font-semibold text-slate-100">{loading ? '—' : filteredLoans.length} loans</p>
+          </div>
+        }
+        actions={
+          <div className="flex rounded-xl border border-white/[0.08] bg-slate-950/55 p-1">
           {(['ACTIVE', 'RETURNED', 'ALL'] as const).map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                filter === f ? 'bg-white/10 text-white' : 'text-slate-400 hover:text-slate-200'
+              className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+                filter === f ? 'bg-indigo-500/20 text-indigo-100 shadow-inner' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               {f.charAt(0) + f.slice(1).toLowerCase()}
             </button>
           ))}
-        </div>
-      </div>
+          </div>
+        }
+      />
 
       {loading ? (
         <div className="flex justify-center py-12"><Spinner /></div>

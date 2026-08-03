@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { adminApi } from '@/api/admin';
 import { User } from '@/types';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import DataTable, { Column } from '@/components/ui/DataTable';
 import Spinner from '@/components/ui/Spinner';
+import PageHeader from '@/components/ui/PageHeader';
 import toast from 'react-hot-toast';
 
 const AdminUsersPage = () => {
@@ -88,11 +89,18 @@ const AdminUsersPage = () => {
   ];
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-white mb-2">Manage Users</h1>
-        <p className="text-slate-400">View and manage system users and roles.</p>
-      </div>
+    <div className="space-y-7">
+      <PageHeader
+        eyebrow="Member administration"
+        title={<>Your library community, <span className="gradient-text">at a glance.</span></>}
+        description="Review member access, update roles, and keep everyone connected to the collection."
+        aside={
+          <div className="hidden rounded-xl border border-white/[0.08] bg-slate-950/45 px-4 py-3 sm:block">
+            <p className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500">Members</p>
+            <p className="mt-1 text-lg font-semibold text-slate-100">{loading ? '—' : users.length} people</p>
+          </div>
+        }
+      />
 
       <Card padding="none">
         {loading ? (

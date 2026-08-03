@@ -1,4 +1,4 @@
-import React, { InputHTMLAttributes, ReactNode, forwardRef } from 'react';
+import { InputHTMLAttributes, ReactNode, forwardRef } from 'react';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -24,7 +24,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           <input
             ref={ref}
             className={`
-              w-full bg-black border rounded-xl py-2.5 px-4
+              w-full bg-slate-950/65 border rounded-xl py-2.5 px-4
               text-slate-100 placeholder-slate-500
               transition-all duration-300 outline-none backdrop-blur-sm
               ${icon ? 'pl-10' : ''}

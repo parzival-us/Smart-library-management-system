@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { booksApi } from '@/api/books';
 import { circulationApi } from '@/api/circulation';
@@ -8,8 +8,9 @@ import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Spinner from '@/components/ui/Spinner';
+import BookCover from '@/components/ui/BookCover';
 import toast from 'react-hot-toast';
-import { FiArrowLeft, FiBook, FiBookmark } from 'react-icons/fi';
+import { FiArrowLeft, FiBookmark } from 'react-icons/fi';
 
 const BookDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -88,16 +89,21 @@ const BookDetailPage = () => {
     <div className="animate-fade-in pb-12">
       <button 
         onClick={() => navigate(-1)}
-        className="flex items-center text-sm font-medium text-slate-400 hover:text-white transition-colors mb-6"
+        className="mb-6 flex items-center rounded-lg px-1 py-1 text-sm font-medium text-slate-400 transition-colors hover:text-white"
       >
         <FiArrowLeft className="mr-2" /> Back to Catalog
       </button>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
         {/* Left Col: Image */}
         <div className="md:col-span-1">
-          <Card padding="none" className="overflow-hidden aspect-[2/3] flex items-center justify-center bg-gradient-to-br from-indigo-900 to-slate-900 relative shadow-2xl shadow-black/50">
-            <span className="text-9xl font-bold text-white/10">{book.title.charAt(0)}</span>
+          <Card padding="none" className="aspect-[2/3] overflow-hidden shadow-2xl shadow-black/50">
+            <BookCover
+              title={book.title}
+              author={book.authors?.map(author => author.name).join(', ')}
+              coverUrl={book.cover_image_url}
+              className="h-full w-full"
+            />
           </Card>
         </div>
 
@@ -108,8 +114,8 @@ const BookDetailPage = () => {
               {book.category && <Badge variant="primary">{book.category.name}</Badge>}
               <span className="text-sm text-slate-400">ISBN: {book.isbn}</span>
             </div>
-            <h1 className="text-4xl font-bold text-white mb-2">{book.title}</h1>
-            <p className="text-lg text-indigo-300 font-medium">
+            <h1 className="mb-2 text-4xl font-bold tracking-[-0.04em] text-white sm:text-5xl">{book.title}</h1>
+            <p className="text-lg font-medium text-indigo-300">
               By {book.authors?.map(a => a.name).join(', ')}
             </p>
           </div>
@@ -122,11 +128,11 @@ const BookDetailPage = () => {
           </div>
 
           <div className="flex items-center space-x-4 pt-4">
-            <div className="flex-1 glass rounded-xl p-4 border-l-4 border-l-indigo-500">
+            <div className="glass flex-1 rounded-xl border-l-4 border-l-indigo-400 p-4">
               <p className="text-sm text-slate-400 mb-1">Published</p>
               <p className="text-lg font-semibold text-white">{book.published_year || 'Unknown'}</p>
             </div>
-            <div className="flex-1 glass rounded-xl p-4 border-l-4 border-l-emerald-500">
+            <div className="glass flex-1 rounded-xl border-l-4 border-l-emerald-400 p-4">
               <p className="text-sm text-slate-400 mb-1">Available Copies</p>
               <p className="text-lg font-semibold text-white">{availableCopies.length} / {book.copies?.length || 0}</p>
             </div>
